@@ -13,7 +13,7 @@ services:
       - redis
     volumes:
       - ./src/app:/code/app
-      - .env:/.env
+      - .env:/code/.env
 
   worker:
     build:
@@ -27,7 +27,7 @@ services:
       - redis
     volumes:
       - ./src/app:/code/app
-      - .env:/.env
+      - .env:/code/.env
 
   db:
     image: postgres:13
