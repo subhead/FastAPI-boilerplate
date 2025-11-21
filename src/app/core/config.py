@@ -1,7 +1,7 @@
 import os
 from enum import Enum
 
-from pydantic import SecretStr, computed_field
+from pydantic import SecretStr, computed_field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -9,9 +9,20 @@ class AppSettings(BaseSettings):
     APP_NAME: str = "FastAPI app"
     APP_DESCRIPTION: str | None = None
     APP_VERSION: str | None = None
+    APP_BACKEND_HOST: str = "http://localhost:8000"
+    APP_FRONTEND_HOST: str | None = None
     LICENSE_NAME: str | None = None
     CONTACT_NAME: str | None = None
     CONTACT_EMAIL: str | None = None
+
+    @field_validator("APP_BACKEND_HOST", "APP_FRONTEND_HOST", mode="after")
+    @classmethod
+    def validate_hosts(cls, host: str) -> str:
+        if host is not None and not (host.startswith("http://") or host.startswith("https://")):
+            raise ValueError(
+                f"HOSTS must define their protocol and start with http:// or https://. Received the host {host}."
+            )
+        return host
 
 
 class CryptSettings(BaseSettings):
@@ -171,6 +182,15 @@ class Settings(
         case_sensitive=True,
         extra="ignore",
     )
+
+    @field_validator("APP_FRONTEND_HOST")
+    @classmethod
+    def validate_app_frontend_host_protocol(cls, host: str) -> str:
+        if EnvironmentSettings.ENVIRONMENT == EnvironmentOption.PRODUCTION and not host.startswith("https://"):
+            raise ValueError(
+                f"In production, APP_FRONTEND_HOST must start with the https:// protocol. Received the host {host}."
+            )
+        return host
 
 
 settings = Settings()
