@@ -13,10 +13,10 @@ from sqlalchemy.orm.session import Session
 from src.app.core.config import settings
 from src.app.main import app
 
-DATABASE_URI = settings.POSTGRES_URI
-DATABASE_PREFIX = settings.POSTGRES_SYNC_PREFIX
+DATABASE_URL = settings.POSTGRES_URL
 
-sync_engine = create_engine(DATABASE_PREFIX + DATABASE_URI)
+
+sync_engine = create_engine(DATABASE_URL)
 local_session = sessionmaker(autocommit=False, autoflush=False, bind=sync_engine)
 
 
@@ -72,13 +72,13 @@ def sample_user_data():
 @pytest.fixture
 def sample_user_read():
     """Generate a sample UserRead object."""
-    import uuid
+    from uuid6 import uuid7
 
     from src.app.schemas.user import UserRead
 
     return UserRead(
         id=1,
-        uuid=uuid.uuid4(),
+        uuid=uuid7(),
         name=fake.name(),
         username=fake.user_name(),
         email=fake.email(),

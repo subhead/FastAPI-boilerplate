@@ -3,17 +3,29 @@ from datetime import UTC, datetime
 from typing import Any
 
 from pydantic import BaseModel, Field, field_serializer
+from uuid6 import uuid7
 
 
 class HealthCheck(BaseModel):
-    name: str
+    status: str
+    environment: str
     version: str
-    description: str
+    timestamp: str
+
+
+class ReadyCheck(BaseModel):
+    status: str
+    environment: str
+    version: str
+    app: str
+    database: str
+    redis: str
+    timestamp: str
 
 
 # -------------- mixins --------------
 class UUIDSchema(BaseModel):
-    uuid: uuid_pkg.UUID = Field(default_factory=uuid_pkg.uuid4)
+    uuid: uuid_pkg.UUID = Field(default_factory=uuid7)
 
 
 class TimestampSchema(BaseModel):

@@ -63,7 +63,7 @@ from app.core.exceptions.http_exceptions import ForbiddenException
 async def delete_user(
     user_id: int,
     current_user: Annotated[dict, Depends(get_current_user)]
-):
+        ):
     if current_user["id"] != user_id and not current_user["is_superuser"]:
         raise ForbiddenException("You can only delete your own account")
     
@@ -121,7 +121,7 @@ async def update_user(
     user_id: int,
     user_data: UserUpdate,
     db: AsyncSession
-):
+        ):
     # Check if user exists
     if not await crud_users.exists(db=db, id=user_id):
         raise NotFoundException("User not found")
@@ -143,7 +143,7 @@ async def get_post(
     post_id: int,
     current_user: Annotated[dict, Depends(get_current_user)],
     db: AsyncSession
-):
+        ):
     post = await crud_posts.get(db=db, id=post_id)
     if not post:
         raise NotFoundException("Post not found")
@@ -154,6 +154,10 @@ async def get_post(
     
     return post
 ```
+
+> **Note:**  
+> Some CRUD helper functions may evolve to return falsy-but-valid values (e.g. empty objects).  
+> To future-proof your API, prefer `if post is None:` instead of `if not post:` when checking existence.
 
 ## Validation Errors
 
@@ -458,8 +462,8 @@ async def test_duplicate_email(client: AsyncClient):
 ## What's Next
 
 Now that you understand error handling:
-- **[Versioning](versioning.md)** - Learn how to version your APIs
-- **[Database CRUD](../database/crud.md)** - Understand the database operations
+- **[Versioning](versioning.md)** - Learn how to version your APIs<br>
+- **[Database CRUD](../database/crud.md)** - Understand the database operations<br>
 - **[Authentication](../authentication/index.md)** - Add user authentication to your APIs
 
 Proper error handling makes your API much more user-friendly and easier to debug! 
